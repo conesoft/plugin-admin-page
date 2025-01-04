@@ -1,0 +1,32 @@
+﻿@using Conesoft.Plugin.AdminPage.Features.ServiceWatcher.Services
+@using Conesoft.Plugin.AdminPage.Features.ServiceWatcher.State
+
+@implements IDisposable
+
+@inject ServiceWatcher serviceWatcher
+
+@foreach (var category in services.GroupBy(s => s.Category))
+{
+    <Category Name="@category.Key" Entries="@category.ToArray()" />
+}
+
+@code {
+    Service[] services = [];
+
+    protected override void OnInitialized()
+    {
+        serviceWatcher.StateChanged += OnStateChanged;
+        services = serviceWatcher.State;
+    }
+
+    public void Dispose()
+    {
+        serviceWatcher.StateChanged -= OnStateChanged;
+    }
+
+    private void OnStateChanged(Service[] services)
+    {
+        this.services = services;
+        InvokeAsync(StateHasChanged);
+    }
+}

@@ -2,13 +2,9 @@
 
 	<PropertyGroup>
 		<TargetFramework>net9.0</TargetFramework>
-		<RootNamespace>Conesoft.Plugin.NotificationService</RootNamespace>
+		<RootNamespace>Conesoft.Plugin.AdminPage</RootNamespace>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<None Include="Properties\PublishProfiles\Deploy.pubxml.user" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Conesoft.Files" Version="3.0.5" />
@@ -16,5 +12,9 @@
 		<PackageReference Include="FolkerKinzel.DataUrls" Version="2.0.0" />
 		<PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
 		<PackageReference Include="System.Drawing.Common" Version="9.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\blazor-components\src\Blazor Components.csproj" />
 	</ItemGroup>
 </Project>

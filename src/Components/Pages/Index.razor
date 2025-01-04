@@ -1,0 +1,24 @@
+﻿@page "/"
+@using Conesoft.Blazor.Components.Interfaces
+@using Conesoft.Blazor.Components
+@using System.Reflection
+@using System.Text.RegularExpressions
+@using Conesoft.Plugin.AdminPage.Components.Controls
+
+@rendermode InteractiveServer
+
+<CascadingAuthenticationState>
+    <UserHeaderNav>
+        <HomeButtonContent>⌂</HomeButtonContent>
+        <NavContent>
+            <NavLink Match=NavLinkMatch.All href="/">admin</NavLink>
+        </NavContent>
+    </UserHeaderNav>
+    <AuthorizeView>
+        <Authorized>
+            <main>
+                <Categories/>
+            </main>
+        </Authorized>
+    </AuthorizeView>
+</CascadingAuthenticationState>

@@ -1,0 +1,59 @@
+﻿@using Conesoft.Plugin.AdminPage.Features.ServiceRestarter.Services
+@using Conesoft.Plugin.AdminPage.Features.ServiceWatcher.State
+
+@inject IJSRuntime JsRuntime
+@inject ServiceRestarter restarter
+
+@if (Entries.Length > 0)
+{
+    <section>
+        <header>@Name</header>
+        <ul>
+            @foreach (var entry in Entries)
+            {
+                <li>
+                    <img class="icon" src="/icons/services/@(entry.Category.ToLower()[..^1]).svg" />
+                    @if (entry.Port is int)
+                    {
+                        <a href="https://@entry.Name" target="_blank">@entry.Name</a>
+                    }
+                    else
+                    {
+                        <p>@entry.Name</p>
+                    }
+                    <span title="process id">@entry.Process</span>
+                    @if (entry.Port is int)
+                    {
+                        <span title="port">@entry.Port</span>
+                    }
+                    else
+                    {
+                        <span />
+                    }
+                    <menu>
+                        <li dangerous>
+                            <a title="restart service" @onclick="@(() => RestartService(entry.Name))" @onclick:preventDefault=true @onclick:stopPropagation=true>↺</a>
+                        </li>
+                    </menu>
+                </li>
+            }
+        </ul>
+    </section>
+}
+
+@code {
+    [Parameter]
+    public string Name { get; set; } = default!;
+
+    [Parameter]
+    public Service[] Entries { get; set; } = [];
+
+    async Task RestartService(string name)
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", $"Are you sure?\nrestart {Name.ToLower()[..^1]} {name}");
+        if (confirmed)
+        {
+            await restarter.RestartService(name, category: Name);
+        }
+    }
+}
