@@ -21,15 +21,13 @@
                     {
                         <p>@entry.Name</p>
                     }
-                    <span title="process id">@entry.Process</span>
-                    @if (entry.Port is int)
-                    {
-                        <span title="port">@entry.Port</span>
-                    }
-                    else
-                    {
-                        <span />
-                    }
+                    <ul class="tags">
+                        @if (entry.Port != null)
+                        {
+                            <li>//:@entry.Port</li>
+                        }
+                        <li>pid @($"{entry.Process:00000}")</li>
+                    </ul>
                     <menu>
                         <li dangerous>
                             <a title="restart service" @onclick="@(() => RestartService(entry.Name))" @onclick:preventDefault=true @onclick:stopPropagation=true>↺</a>
