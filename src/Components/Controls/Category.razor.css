@@ -1,44 +1,7 @@
-.icon {
-    grid-column: 2;
-    place-self: center;
+li.service.stopped > *:not(menu) {
+    opacity: 0.7;
 }
 
-span {
-    display: grid;
-    place-items: center;
-    color: gray;
-    font-size: 0.7rem;
-}
-
-    span::before {
-        content: attr(title);
-        font-size: 0.55em;
-        font-weight: 900;
-        min-width: max-content;
-        line-height: 100%;
-    }
-
-menu {
-    display: flex;
-}
-
-    menu li {
-        display: inline;
-        height: 2rem;
-        aspect-ratio: 1;
-        text-align: center;
-        cursor: pointer;
-        opacity: 1;
-    }
-
-    li:not(:hover) menu li {
-        opacity: 0.25;
-    }
-
-        menu li:hover {
-            background-color: var(--accent-color);
-        }
-
-[dangerous] {
-    --accent-color: var(--danger-color);
+s {
+    text-decoration: line-through;
 }

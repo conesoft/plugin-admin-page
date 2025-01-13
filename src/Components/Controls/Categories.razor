@@ -4,29 +4,52 @@
 @implements IDisposable
 
 @inject ServiceWatcher serviceWatcher
+@inject DeployedServiceWatcher deployedServiceWatcher
 
-@foreach (var category in services.GroupBy(s => s.Category))
+@foreach (var category in allServices.GroupBy(s => s.Category))
 {
     <Category Name="@category.Key" Entries="@category.ToArray()" />
 }
 
 @code {
     Service[] services = [];
+    Service[] deployedServices = [];
+    Service[] allServices = [];
 
     protected override void OnInitialized()
     {
         serviceWatcher.StateChanged += OnStateChanged;
+        deployedServiceWatcher.StateChanged += OnDeployedStateChanged;
         services = serviceWatcher.State;
+        deployedServices = deployedServiceWatcher.State;
+        Merge();
     }
 
     public void Dispose()
     {
+        deployedServiceWatcher.StateChanged -= OnDeployedStateChanged;
         serviceWatcher.StateChanged -= OnStateChanged;
     }
 
     private void OnStateChanged(Service[] services)
     {
         this.services = services;
+        Merge();
         InvokeAsync(StateHasChanged);
+    }
+
+    private void OnDeployedStateChanged(Service[] deployedServices)
+    {
+        this.deployedServices = deployedServices;
+        Merge();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void Merge()
+    {
+        allServices = services
+            .Concat(deployedServices.Where(d => !services.Any(s => s.Name == d.Name)))
+            .Where(s => s.Category != "Host")
+            .ToArray();
     }
 }

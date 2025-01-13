@@ -9,29 +9,48 @@
     <section>
         <header>@Name</header>
         <ul>
-            @foreach (var entry in Entries)
+            @foreach (var entry in Entries.OrderBy(e => e.Name))
             {
-                <li>
+                <li class=@(entry.Process != null ? "service running" : "service stopped")>
                     <img class="icon" src="/icons/services/@(entry.Category.ToLower()[..^1]).svg" />
                     @if (entry.Port is int)
                     {
                         <a href="https://@entry.Name" target="_blank">@entry.Name</a>
                     }
-                    else
+                    else if (entry.Process is int)
                     {
                         <p>@entry.Name</p>
+                    }
+                    else
+                    {
+                        <s>@entry.Name</s>
                     }
                     <ul class="tags">
                         @if (entry.Port != null)
                         {
                             <li>//:@entry.Port</li>
                         }
-                        <li>pid @($"{entry.Process:00000}")</li>
+                        @if (entry.Process != null)
+                        {
+                            <li>pid @($"{entry.Process:00000}")</li>
+                        }
                     </ul>
                     <menu>
-                        <li dangerous>
-                            <a title="restart service" @onclick="@(() => RestartService(entry.Name))" @onclick:preventDefault=true @onclick:stopPropagation=true>↺</a>
-                        </li>
+                        @if (entry.Process != null)
+                        {
+                            <li risky>
+                                <a title="restart service" @onclick="@(() => RestartService(entry.Name))" @onclick:preventDefault=true @onclick:stopPropagation=true>↺</a>
+                            </li>
+                            <li dangerous>
+                                <a title="stop service" @onclick="@(() => StopService(entry.Name))" @onclick:preventDefault=true @onclick:stopPropagation=true>✕</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li>
+                                <a title="start service" @onclick="@(() => StartService(entry.Name))" @onclick:preventDefault=true @onclick:stopPropagation=true>▶</a>
+                            </li>
+                        }
                     </menu>
                 </li>
             }
@@ -53,5 +72,19 @@
         {
             await restarter.RestartService(name, category: Name);
         }
+    }
+
+    async Task StopService(string name)
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", $"Are you sure?\nstop {Name.ToLower()[..^1]} {name}");
+        if (confirmed)
+        {
+            await restarter.StopService(name, category: Name);
+        }
+    }
+
+    async Task StartService(string name)
+    {
+        await restarter.RestartService(name, category: Name);
     }
 }
