@@ -15,7 +15,7 @@
             <NavLink Match=NavLinkMatch.All href="/">services</NavLink>
         </NavContent>
     </UserHeaderNav>
-    <AuthorizeView>
+    <AuthorizeView Roles="Admin, Editor, Viewer">
         <Authorized>
             <main>
                 <Categories/>

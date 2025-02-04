@@ -6,51 +6,60 @@
 
 @if (Entries.Length > 0)
 {
-    <section>
-        <header>@Name</header>
-        <ul>
+    <section title="@Name">
+        <ul class="with-icon">
             @foreach (var entry in Entries.OrderBy(e => e.Name))
             {
                 <li class=@(entry.Process != null ? "service running" : "service stopped")>
                     <img class="icon" src="/icons/services/@(entry.Category.ToLower()[..^1]).svg" />
-                    @if (entry.Port is int)
-                    {
-                        <a href="https://@entry.Name" target="_blank">@entry.Name</a>
-                    }
-                    else if (entry.Process is int)
-                    {
-                        <p>@entry.Name</p>
-                    }
-                    else
-                    {
-                        <s>@entry.Name</s>
-                    }
-                    <ul class="tags">
-                        @if (entry.Port != null)
+                    <section>
+                        @if (entry.Port is int)
                         {
-                            <li>//:@entry.Port</li>
+                            <a href="https://@entry.Name" target="_blank">@entry.Name</a>
                         }
-                        @if (entry.Process != null)
+                        else if (entry.Process is int)
                         {
-                            <li>pid @($"{entry.Process:00000}")</li>
-                        }
-                    </ul>
-                    <menu>
-                        @if (entry.Process != null)
-                        {
-                            <li risky>
-                                <a title="restart service" @onclick="@(() => RestartService(entry.Name))" @onclick:preventDefault=true @onclick:stopPropagation=true>↺</a>
-                            </li>
-                            <li dangerous>
-                                <a title="stop service" @onclick="@(() => StopService(entry.Name))" @onclick:preventDefault=true @onclick:stopPropagation=true>✕</a>
-                            </li>
+                            <p>@entry.Name</p>
                         }
                         else
                         {
-                            <li>
-                                <a title="start service" @onclick="@(() => StartService(entry.Name))" @onclick:preventDefault=true @onclick:stopPropagation=true>▶</a>
-                            </li>
+                            <s>@entry.Name</s>
                         }
+                        <ul class="tags">
+                            @if (entry.Port != null)
+                            {
+                                <li>//:@entry.Port</li>
+                            }
+                            @if (entry.Process != null)
+                            {
+                                <li>pid @($"{entry.Process:00000}")</li>
+                            }
+                        </ul>
+                    </section>
+                    <menu>
+                        <AuthorizeView Roles="Admin, Editor">
+                            <Authorized>
+                                @if (entry.Process != null)
+                                {
+                                    <li risky>
+                                        <a title="restart service" @onclick="@(() => RestartService(entry.Name))" @onclick:preventDefault=true @onclick:stopPropagation=true>↺</a>
+                                    </li>
+                                    <AuthorizeView Roles="Admin" Context="_">
+                                        <Authorized>
+                                            <li dangerous>
+                                                <a title="stop service" @onclick="@(() => StopService(entry.Name))" @onclick:preventDefault=true @onclick:stopPropagation=true>✕</a>
+                                            </li>
+                                        </Authorized>
+                                    </AuthorizeView>
+                                }
+                                else
+                                {
+                                    <li>
+                                        <a title="start service" @onclick="@(() => StartService(entry.Name))" @onclick:preventDefault=true @onclick:stopPropagation=true>▶</a>
+                                    </li>
+                                }
+                            </Authorized>
+                        </AuthorizeView>
                     </menu>
                 </li>
             }
